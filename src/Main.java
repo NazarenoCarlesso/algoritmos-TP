@@ -5,8 +5,6 @@ import structure.PathResult;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("=== PRUEBA AVANZADA DE DIJKSTRA (RED RAMIFICADA) ===\n");
-
         AVLTree arbolCentros = new AVLTree();
         Graph grafo = new Graph(arbolCentros);
 
@@ -29,10 +27,38 @@ public class Main {
 
         System.out.println("Calculando el camino óptimo desde A hasta F en una red compleja...");
         PathResult resultado = grafo.dijkstra("A", "F");
-
         System.out.println("\n--- RESULTADO OBTENIDO ---");
         System.out.println(resultado);
-
         System.out.println("\n[AVISO] El tiempo obtenido fue: " + resultado.getTotalTime());
+        System.out.println();
+
+        java.util.List<String> ordenBfs = grafo.bfs("A");
+        System.out.println("Orden de visita (por niveles de saltos): " + String.join(" -> ", ordenBfs));
+        System.out.println("Cantidad de centros alcanzados desde A: " + ordenBfs.size());
+        System.out.println();
+
+        grafo.aislarCentro("C");
+        System.out.println("Intentando recalcular el camino mínimo de A a F sin el centro C...");
+        PathResult resultadoPostAislamiento = grafo.dijkstra("A", "F");
+
+        System.out.println(resultadoPostAislamiento);
+        System.out.println();
+
+        System.out.print("Árbol antes de eliminar ('B'): ");
+        arbolCentros.printInOrder();
+        System.out.println();
+        arbolCentros.delete("B");
+        System.out.print("Árbol después de eliminar ('B'): ");
+        arbolCentros.printInOrder();
+        System.out.println();
+
+        System.out.print("In-Order: ");
+        arbolCentros.printInOrder();
+
+        System.out.print("Pre-Order: ");
+        arbolCentros.printPreOrder();
+
+        System.out.print("Post-Order: ");
+        arbolCentros.printPostOrder();
     }
 }

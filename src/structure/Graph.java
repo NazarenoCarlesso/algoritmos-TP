@@ -3,9 +3,13 @@ package structure;
 import model.Ruta;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 
 public class Graph {
     private AVLTree arbolCentros;
@@ -102,5 +106,57 @@ public class Graph {
 
         int tiempoTotal = tiemposMinimos.getOrDefault(idDestino, Integer.MAX_VALUE);
         return new PathResult(tiempoTotal, camino);
+    }
+
+    public List<String> bfs(String idOrigen) {
+        List<String> visitedOrder = new ArrayList<>();
+
+        if (arbolCentros.search(idOrigen) == null) {
+            System.out.println("[ERROR] El centro de origen no existe en el sistema.");
+            return visitedOrder;
+        }
+
+        Queue<String> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+
+        queue.add(idOrigen);
+        visited.add(idOrigen);
+
+        while (!queue.isEmpty()) {
+            String currentId = queue.poll();
+            visitedOrder.add(currentId);
+
+            for (Ruta r : getRutasAdyacentesActivas(currentId)) {
+                String vecino = r.getIdOrigen().equals(currentId) ? r.getIdDestino() : r.getIdOrigen();
+
+                if (!visited.contains(vecino)) {
+                    visited.add(vecino);
+                    queue.add(vecino);
+                }
+            }
+        }
+
+        return visitedOrder;
+    }
+
+    public void aislarCentro(String idCentro) {
+        if (arbolCentros.search(idCentro) == null) {
+            System.out.println("[ERROR] El centro '" + idCentro + "' no existe en el sistema.");
+            return;
+        }
+
+        int rutasDesactivadas = 0;
+
+        for (Ruta r : rutas) {
+            if (r.isActiva()) {
+                if (r.getIdOrigen().equals(idCentro) || r.getIdDestino().equals(idCentro)) {
+                    r.setActiva(false);
+                    rutasDesactivadas++;
+                }
+            }
+        }
+
+        System.out.println("[INFO] El centro '" + idCentro + "' ha sido aislado exitosamente. Se desactivaron "
+                + rutasDesactivadas + " ruta(s).");
     }
 }
